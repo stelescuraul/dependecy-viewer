@@ -1,0 +1,24 @@
+{
+  "name": "dependency-viewer",
+  "version": "1.0.0",
+  "description": "View package dependencies across projects",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Raul Stelescu",
+  "license": "ISC",
+  "devDependencies": {
+    "@commitlint/cli": "^9.0.1",
+    "eslint": "^7.4.0",
+    "eslint-config-airbnb-base": "^14.2.0",
+    "eslint-plugin-import": "^2.22.0",
+    "husky": "^4.2.5"
+  },
+  "dependencies": {
+    "@antv/g6": "^3.5.9",
+    "graphology": "^0.17.1",
+    "request": "^2.88.2",
+    "request-promise": "^4.2.5"
+  }
+}
