@@ -1,2 +1,4 @@
 node_modules
 graphData/*
+.vscode
+.nyc_output
