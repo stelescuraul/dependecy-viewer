@@ -12,7 +12,7 @@ const Gitlab = proxyquire('../lib/wrappers/Gitlab', {
   'request-promise': requestPromiseStub,
 });
 
-describe('GitlabWrapper', () => {
+describe('Gitlab', () => {
   const defaultOrganization = 'foorg';
   const defaultOptions = {
     protocol: 'http',
@@ -75,12 +75,14 @@ describe('GitlabWrapper', () => {
         name: 'foo',
         namespace: {
           name: 'foorg',
+          path: 'foorg',
         },
       },
       {
         name: 'bar',
         namespace: {
           name: 'barorg',
+          path: 'barorg',
         },
       },
     ];
@@ -138,6 +140,7 @@ describe('GitlabWrapper', () => {
         name: 'foo',
         namespace: {
           name: 'foorg',
+          path: 'foorg',
         },
         id: 0,
       },
@@ -145,6 +148,7 @@ describe('GitlabWrapper', () => {
         name: 'bar',
         namespace: {
           name: 'barorg',
+          path: 'barorg',
         },
         id: 1,
       },
@@ -214,7 +218,10 @@ describe('GitlabWrapper', () => {
 
       return expect(gitlabWrapper.getAllPackages()).to.eventually.eql([
         {
-          ...packageJsonData(0), devDependencies: {}, dependencies: {}, peerDependencies: {},
+          ...packageJsonData(0),
+          devDependencies: {},
+          dependencies: {},
+          peerDependencies: {},
         },
       ]);
     });

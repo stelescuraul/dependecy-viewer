@@ -47,7 +47,7 @@ const renderGraph = (data) => {
       ],
     },
     defaultNode: {
-      size: [100, 100],
+      size: [50, 50],
       style: {
         lineWidth: 1,
         fill: '#DEE9FF',
@@ -55,12 +55,12 @@ const renderGraph = (data) => {
       },
       labelCfg: {
         style: {
-          fontSize: 60,
+          fontSize: 20,
         },
       },
     },
     defaultEdge: {
-      size: 5,
+      size: 2,
       style: {
         stroke: '#e2e2e2',
         lineAppendWidth: 5,
@@ -72,14 +72,15 @@ const renderGraph = (data) => {
           opacity: 0,
           stroke: 'white',
           lineWidth: 20,
-          fontSize: 50,
+          fontSize: 20,
         },
       },
     },
     layout: {
       type: 'dagre',
-      nodesep: 150,
-      ranksep: 300,
+      nodesep: 30,
+      ranksep: 100,
+      rankdir: 'TB',
     },
     nodeStateStyles: {
       active: {
@@ -95,8 +96,6 @@ const renderGraph = (data) => {
       },
       hover: {
         stroke: '#999',
-        fill: '#d3adf7',
-        color: 'blue',
       },
     },
     plugins: [minimap],
@@ -179,6 +178,7 @@ const renderGraph = (data) => {
           },
         },
       });
+      graph.findById(edge).toFront();
     });
   });
 
