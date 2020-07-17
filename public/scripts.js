@@ -25,11 +25,29 @@ const renderGraph = (data) => {
         'drag-canvas',
         'drag-node',
         'zoom-canvas',
-        'activate-relations',
+        {
+          type: 'tooltip',
+          formatText: function formatText(model) {
+            let displayTooltip = `Name: ${model.id} </br>`;
+            if (model.attributes) {
+              if (model.attributes.version) {
+                displayTooltip += `Version: ${model.attributes.version} </br>`;
+              }
+              if (model.attributes.description) {
+                displayTooltip += `Description: ${model.attributes.description} </br>`;
+              }
+              if (model.attributes.homepage) {
+                displayTooltip += `Homepage: ${model.attributes.homepage} </br>`;
+              }
+            }
+
+            return displayTooltip;
+          },
+        },
       ],
     },
     defaultNode: {
-      size: [50, 50],
+      size: [100, 100],
       style: {
         lineWidth: 1,
         fill: '#DEE9FF',
@@ -37,28 +55,31 @@ const renderGraph = (data) => {
       },
       labelCfg: {
         style: {
-          fontSize: 20,
+          fontSize: 60,
         },
       },
     },
     defaultEdge: {
-      size: 2,
+      size: 5,
       style: {
         stroke: '#e2e2e2',
-        lineAppendWidth: 2,
+        lineAppendWidth: 5,
+        color: '#e2e2e2',
       },
       labelCfg: {
         autoRotate: true,
         style: {
           opacity: 0,
           stroke: 'white',
-          lineWidth: 10,
-          fontSize: 20,
+          lineWidth: 20,
+          fontSize: 50,
         },
       },
     },
     layout: {
       type: 'dagre',
+      nodesep: 150,
+      ranksep: 300,
     },
     nodeStateStyles: {
       active: {
@@ -71,6 +92,11 @@ const renderGraph = (data) => {
     edgeStateStyles: {
       active: {
         stroke: '#999',
+      },
+      hover: {
+        stroke: '#999',
+        fill: '#d3adf7',
+        color: 'blue',
       },
     },
     plugins: [minimap],
@@ -95,15 +121,58 @@ const renderGraph = (data) => {
   graph.on('node:click', (evt) => {
     const node = evt.item;
     node.blocked = !node.blocked;
+
+    const edges = node.getEdges().map((edge) => edge._cfg.id);
+    edges.forEach((edge) => {
+      graph.updateItem(edge, {
+        style: {
+          stroke: '#e2e2e2',
+        },
+        blocked: node.blocked,
+      });
+      graph.setItemState(edge, 'hover', node.blocked);
+    });
+  });
+
+  graph.on('edge:mouseenter', (evt) => {
+    const edge = evt.item;
+    graph.setItemState(edge, 'hover', true);
+    edge.toFront();
+    graph.updateItem(edge, {
+      stroke: '#999',
+      labelCfg: {
+        style: {
+          opacity: 1,
+        },
+      },
+    });
+  });
+
+  graph.on('edge:mouseleave', (evt) => {
+    const edge = evt.item;
+    if (!edge._cfg.model.blocked) {
+      graph.setItemState(edge, 'hover', false);
+      edge.toBack();
+      graph.updateItem(edge, {
+        stroke: '#e2e2e2',
+        labelCfg: {
+          style: {
+            opacity: 0,
+          },
+        },
+      });
+    }
   });
 
   graph.on('node:mouseenter', (evt) => {
     const node = evt.item;
 
     const edges = node.getEdges().map((edge) => edge._cfg.id);
-    // There is a problem updating this.
     edges.forEach((edge) => {
       graph.updateItem(edge, {
+        style: {
+          stroke: '#999',
+        },
         labelCfg: {
           style: {
             opacity: 1,
@@ -123,6 +192,9 @@ const renderGraph = (data) => {
 
     edges.forEach((edge) => {
       graph.updateItem(edge, {
+        style: {
+          stroke: '#e2e2e2',
+        },
         labelCfg: {
           style: {
             opacity: 0,
@@ -158,9 +230,8 @@ $('#packageSelector').bind('keydown blur change', (e) => {
       .then((data) => {
         const nodesSet = new Set();
         data.edges = data.edges.filter((edge) => {
-          const includes =
-            edge.source.includes(packageName) ||
-            edge.target.includes(packageName);
+          const includes = edge.source.includes(packageName)
+            || edge.target.includes(packageName);
           if (includes) {
             nodesSet.add(edge.source);
             nodesSet.add(edge.target);
