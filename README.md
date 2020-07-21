@@ -1,3 +1,4 @@
+![Node.js CI](https://github.com/stelescuraul/dependecy-viewer/workflows/Node.js%20CI/badge.svg?branch=master)
 > Dependency viewer across nodejs projects
 
 - [1. Support](#1-support)
