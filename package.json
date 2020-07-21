@@ -10,10 +10,10 @@
   "author": "Raul Stelescu",
   "license": "ISC",
   "devDependencies": {
-    "@commitlint/cli": "^9.0.1",
+    "@commitlint/cli": "^9.1.2",
     "chai": "^4.2.0",
     "chai-as-promised": "^7.1.1",
-    "eslint": "^7.4.0",
+    "eslint": "^7.5.0",
     "eslint-config-airbnb-base": "^14.2.0",
     "eslint-plugin-import": "^2.22.0",
     "husky": "^4.2.5",
@@ -23,7 +23,7 @@
     "sinon": "^9.0.2"
   },
   "dependencies": {
-    "@antv/g6": "^3.5.9",
+    "@antv/g6": "^3.5.10",
     "graphology": "^0.17.1",
     "request": "^2.88.2",
     "request-promise": "^4.2.5"
