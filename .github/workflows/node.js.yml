@@ -10,6 +10,16 @@ on:
     branches: [ master ]
 
 jobs:
+  lint:
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - uses: wagoid/commitlint-github-action@v1
+
   build:
     runs-on: ubuntu-latest
     strategy:
@@ -22,7 +32,6 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
     - run: npm ci
-    - run: npx commitlint --from=origin/master
     - run: npm test
 
   publish-npm:
