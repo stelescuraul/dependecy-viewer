@@ -127,7 +127,7 @@ Get all package.json from gitlab projects
 | [options.packagePrefix] | <code>String</code> | <code>&#x27;&#x27;</code> | inlcude packages that have this prefix in their name. Useful for organization packages |
 | [options.packageInclude] | <code>String</code> | <code>&#x27;&#x27;</code> | include packages that contain this this in their name |
 
----
+----
 
 <a name="Wrapper"></a>
 
