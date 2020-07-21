@@ -146,4 +146,3 @@ extend it when implementing a Wrapper
 | options.excludeProjects | <code>Array.&lt;String&gt;</code> | array of strings representing projects to exclude |
 | options.packagePrefix | <code>String</code> | inlcude packages that have this prefix in their name. Useful for organization packages |
 | options.packageInclude | <code>String</code> | include packages that contain this this in their name |
-
