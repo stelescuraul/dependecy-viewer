@@ -66,6 +66,20 @@ describe('Gitlab', () => {
         'No token provided',
       );
     });
+
+    it('creates wrapper with membership', () => {
+      const gitlabInstance = new Gitlab(defaultOrganization, {
+        ...defaultOptions,
+        membership: true,
+      });
+
+      expect(gitlabInstance).to.eql({
+        ...defaultOptions,
+        organization: defaultOrganization,
+        membership: true,
+        baseUrl: 'http://localhost/api/v4',
+      });
+    });
   });
 
   describe('getProjects', () => {
@@ -119,6 +133,54 @@ describe('Gitlab', () => {
         { ...defaultProjects.body[0] },
       ]);
     });
+
+    it('calls url with membership', async () => {
+      const organizationGitlabWrapper = new Gitlab(defaultOrganization, {
+        ...defaultOptions,
+        membership: true,
+      });
+
+      await organizationGitlabWrapper.getProjects();
+      return expect(
+        requestPromiseStub.get.calledWith(
+          `${organizationGitlabWrapper.baseUrl}/projects?simple=true&search=${defaultOrganization}&search_namespaces=true&membership=true`,
+        ),
+      ).to.be.true;
+    });
+
+    it('returns all pages', async () => {
+      const firstCallProjects = {
+        body: [
+          {
+            name: 'foo',
+            namespace: {
+              name: 'foorg',
+              path: 'foorg',
+            },
+          },
+        ],
+        headers: {
+          'x-page': 1,
+          'x-total-pages': 2,
+        },
+      };
+      const secondCallProjects = [
+        {
+          name: 'bar',
+          namespace: {
+            name: 'barorg',
+            path: 'barorg',
+          },
+        },
+      ];
+      requestPromiseStub.get.reset();
+      requestPromiseStub.get.onFirstCall().returns(firstCallProjects);
+      requestPromiseStub.get.onSecondCall().returns(secondCallProjects);
+
+      return expect(gitlabWrapper.getProjects()).to.eventually.eql(
+        defaultProjects.body,
+      );
+    });
   });
 
   describe('getPackageJson', () => {
@@ -139,6 +201,16 @@ describe('Gitlab', () => {
     it('returns parsed fakePackageJson', () => expect(gitlabWrapper.getPackageJson('someId')).to.eventually.eql(
       fakePackageJson,
     ));
+
+    it('returns empty object if project does not have package.json or master branch', async () => {
+      const response = {
+        statusCode: 404,
+      };
+      requestPromiseStub.get.reset();
+      requestPromiseStub.get.returns(response);
+
+      return expect(gitlabWrapper.getPackageJson('id')).to.eventually.eql({});
+    });
   });
 
   describe('getAllPackages', () => {
