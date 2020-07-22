@@ -70,22 +70,28 @@ describe('Gitlab', () => {
 
   describe('getProjects', () => {
     let gitlabWrapper;
-    const defaultProjects = [
-      {
-        name: 'foo',
-        namespace: {
-          name: 'foorg',
-          path: 'foorg',
+    const defaultProjects = {
+      body: [
+        {
+          name: 'foo',
+          namespace: {
+            name: 'foorg',
+            path: 'foorg',
+          },
         },
-      },
-      {
-        name: 'bar',
-        namespace: {
-          name: 'barorg',
-          path: 'barorg',
+        {
+          name: 'bar',
+          namespace: {
+            name: 'barorg',
+            path: 'barorg',
+          },
         },
+      ],
+      headers: {
+        'x-page': 1,
+        'x-total-pages': 1,
       },
-    ];
+    };
 
     before(() => {
       gitlabWrapper = new Gitlab('', defaultOptions);
@@ -95,10 +101,12 @@ describe('Gitlab', () => {
       requestPromiseStub.get.returns(defaultProjects);
     });
 
-    it('returns all projects if exludeProjects is emtpy', async () => expect(gitlabWrapper.getProjects()).to.eventually.eql(defaultProjects));
+    it('returns all projects if exludeProjects is emtpy', async () => expect(gitlabWrapper.getProjects()).to.eventually.eql(
+      defaultProjects.body,
+    ));
 
     it('returns only projects not present in excludeProjects', async () => expect(gitlabWrapper.getProjects(['foo'])).to.eventually.eql([
-      { ...defaultProjects[1] },
+      { ...defaultProjects.body[1] },
     ]));
 
     it('returns only the projects of the organization', async () => {
@@ -108,7 +116,7 @@ describe('Gitlab', () => {
       );
 
       return expect(organizationGitlabWrapper.getProjects()).to.eventually.eql([
-        { ...defaultProjects[0] },
+        { ...defaultProjects.body[0] },
       ]);
     });
   });
@@ -125,7 +133,7 @@ describe('Gitlab', () => {
     });
 
     beforeEach(() => {
-      requestPromiseStub.get.returns({ content: requestResponse });
+      requestPromiseStub.get.returns({ body: { content: requestResponse } });
     });
 
     it('returns parsed fakePackageJson', () => expect(gitlabWrapper.getPackageJson('someId')).to.eventually.eql(
@@ -135,24 +143,30 @@ describe('Gitlab', () => {
 
   describe('getAllPackages', () => {
     let gitlabWrapper;
-    const projectsData = [
-      {
-        name: 'foo',
-        namespace: {
-          name: 'foorg',
-          path: 'foorg',
+    const projectsData = {
+      body: [
+        {
+          name: 'foo',
+          namespace: {
+            name: 'foorg',
+            path: 'foorg',
+          },
+          id: 0,
         },
-        id: 0,
-      },
-      {
-        name: 'bar',
-        namespace: {
-          name: 'barorg',
-          path: 'barorg',
+        {
+          name: 'bar',
+          namespace: {
+            name: 'barorg',
+            path: 'barorg',
+          },
+          id: 1,
         },
-        id: 1,
+      ],
+      headers: {
+        'x-page': 1,
+        'x-total-pages': 1,
       },
-    ];
+    };
 
     const dependencies = {
       'production-dep': '1.0.0',
@@ -179,7 +193,7 @@ describe('Gitlab', () => {
     };
 
     const packageJsonData = (id) => {
-      const project = projectsData[id];
+      const project = projectsData.body[id];
 
       return {
         name: project.name,
@@ -206,7 +220,7 @@ describe('Gitlab', () => {
       gitlabWrapper.getPackageJson.restore();
 
       sinon.stub(gitlabWrapper, 'getPackageJson').callsFake((id) => {
-        const project = projectsData[id];
+        const project = projectsData.body[id];
 
         return {
           name: project.name,
